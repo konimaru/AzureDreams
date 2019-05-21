@@ -19,12 +19,14 @@ PUB main
 
   init
 
-  ifnot ina[client#BTN_COM_L] or ina[client#BTN_COM_R]  ' both shoulder buttons released
-    reboot                                              ' skip next level, reboot
+  comm.str(string($FE, "SET:wifi-mode,STA", 13))        ' STAtion mode only
+  if response_eq(string($FE, "=S,0", 13), 250)
+    ifnot ina[client#BTN_COM_L] | ina[client#BTN_COM_R] ' both shoulder buttons released
+      reboot                                            ' skip next level, reboot
 
-  rgbx.clear                                            ' shut down LEDs
-  comm.str(string($FE, "FRUN:autorunSD.bin", 13))       ' next level boot loader
-  waitcnt(clkfreq + cnt)
+    rgbx.clear                                          ' shut down LEDs
+    comm.str(string($FE, "FRUN:autorunSD.bin", 13))     ' next level boot loader
+    waitcnt(clkfreq + cnt)
 
 ' We don't expect to reach this point.
 
@@ -58,4 +60,12 @@ PRI init : surface
   outa[client#BTN_SEC_M] := 1                           ' shoulder push button
   dira[client#BTN_SEC_M] := 1                           ' active
 
+PRI response_eq(signature, timeout)
+
+  repeat strsize(signature)                             ' check incoming string
+    if byte[signature++] <> comm.rxtime(timeout)        ' response against our
+      return{FALSE}                                     ' signature
+
+  return TRUE                                           ' match
+  
 DAT
