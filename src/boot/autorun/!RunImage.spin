@@ -1,7 +1,7 @@
 ''
 ''        Author: Marko Lukat
-'' Last modified: 2019/05/21
-''       Version: 0.4
+'' Last modified: 2019/05/22
+''       Version: 0.5
 ''
 CON
   _clkmode = client#_clkmode
@@ -19,11 +19,11 @@ PUB main
 
   init
 
+  ifnot ina[client#BTN_COM_L] | ina[client#BTN_COM_R]   ' both shoulder buttons released
+    reboot                                              ' skip next level, reboot
+
   comm.str(string($FE, "SET:wifi-mode,STA", 13))        ' STAtion mode only
   if response_eq(string($FE, "=S,0", 13), 250)
-    ifnot ina[client#BTN_COM_L] | ina[client#BTN_COM_R] ' both shoulder buttons released
-      reboot                                            ' skip next level, reboot
-
     rgbx.clear                                          ' shut down LEDs
     comm.str(string($FE, "FRUN:autorunSD.bin", 13))     ' next level boot loader
     waitcnt(clkfreq + cnt)
