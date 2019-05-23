@@ -1,3 +1,3 @@
 AzureDreams
 ============
-A custom firmware for the Parallax Badge WX.
+A custom firmware for the Parallax BadgeWX.
