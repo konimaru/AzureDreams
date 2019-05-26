@@ -1,13 +1,14 @@
 ''
 ''        Author: Marko Lukat
 '' Last modified: 2019/05/26
-''       Version: 0.14.wx.2
+''       Version: 0.14.wx.3
 ''
 '' 20151214: initial version
 '' 20151215: LSB goes out first
 '' 20151216: added reset function
 '' 20160107: h/w arrived, working
 '' 20190526: reset now controlled by dira, pull-up required
+'' 20190526: max dira doesn't work in this context, use mov
 ''
 VAR
   long  link[res_m]
@@ -166,7 +167,7 @@ setup           mov     ctra, ctr0              ' SPI_CLK
                 mov     ctrb, ctr1              ' SPI_MOSI
 
                 mov     outa, msel              ' not selected
-                max     dira, mask              ' drive outputs/reset
+                mov     dira, mask              ' drive outputs/reset
 
                 jmp     #func_3_wait            ' reset, then command loop
 
