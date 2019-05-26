@@ -1,12 +1,13 @@
 ''
 ''        Author: Marko Lukat
-'' Last modified: 2019/05/20
-''       Version: 0.14.wx.1
+'' Last modified: 2019/05/26
+''       Version: 0.14.wx.2
 ''
 '' 20151214: initial version
 '' 20151215: LSB goes out first
 '' 20151216: added reset function
 '' 20160107: h/w arrived, working
+'' 20190526: reset now controlled by dira, pull-up required
 ''
 VAR
   long  link[res_m]
@@ -127,13 +128,13 @@ func_2          andn    outa, mdnc              ' command mode
 
 ' reset display h/w (min 3us, 240 clocks @80MHz)
 
-func_3          andn    outa, mres              ' hard reset
+func_3          or      dira, mres              ' hard reset
 
 func_3_wait     mov     cnt, cnt
                 add     cnt, #9{14} + 306       ' min 3us reset pulse (4us)
                 waitcnt cnt, #0
 
-                or      outa, mres              ' normal operation
+                andn    dira, mres              ' normal operation
 
                 jmp     %%0                     ' return
 
