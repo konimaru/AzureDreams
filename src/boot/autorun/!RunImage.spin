@@ -1,7 +1,7 @@
 ''
 ''        Author: Marko Lukat
-'' Last modified: 2019/05/22
-''       Version: 0.5
+'' Last modified: 2019/05/27
+''       Version: 0.6
 ''
 CON
   _clkmode = client#_clkmode
@@ -30,10 +30,10 @@ PUB main
 
 ' We don't expect to reach this point.
 
-  pixels[0] := pixels[3] := $05_00_00_00
+  pixels[0] := pixels[3] := colour(rgbx#RED)            ' error indicator
 
-DAT                                                     ' RGBX pixel data
-pixels  long    $05_05_05_00[4]
+DAT                                                     ' RGBX pixel storage
+pixels  long    rgbx#BLACK[4]
   
 DAT                                                     ' display initialisation sequence
         byte    6
@@ -44,6 +44,7 @@ iseq    byte    SSD1306#SET_MEMORY_MODE, %111111_00     ' horizontal mode
 
 PRI init : surface
 
+  rgbx.set_all(colour(rgbx#WHITE))                      ' init pixel array
   rgbx.start_2812b(@pixels, 4, client#RGBX, 1_0)        ' start RGBX LED driver
 
   surface := view.init                                  ' start OLED driver
@@ -67,5 +68,9 @@ PRI response_eq(signature, timeout)
       return{FALSE}                                     ' signature
 
   return TRUE                                           ' match
+  
+PRI colour(c)
+
+  return rgbx.scale_rgbw(c, 5)                          ' low intensity scale
   
 DAT
