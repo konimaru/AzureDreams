@@ -1,7 +1,7 @@
 ''
 ''        Author: Marko Lukat
-'' Last modified: 2019/05/26
-''       Version: 0.14.wx.3
+'' Last modified: 2019/05/27
+''       Version: 0.14.wx.4
 ''
 '' 20151214: initial version
 '' 20151215: LSB goes out first
@@ -9,6 +9,7 @@
 '' 20160107: h/w arrived, working
 '' 20190526: reset now controlled by dira, pull-up required
 '' 20190526: max dira doesn't work in this context, use mov
+'' 20190527: display reset now optional during init
 ''
 VAR
   long  link[res_m]
@@ -39,15 +40,17 @@ PUB boot
 
   exec(0, cmd_boot)
   
-PUB init
+PUB init(reset{boolean})
 
   ifnot cognew(@driver, @link{0}) +1
     abort
 
   exec(0, cmd_done)                             ' make sure cog is running
   longfill(@driver{$00}, 0, 64)                 ' before making DAT public
-  longfill(@driver[$C0], 0, 64)
+  longfill(@driver[$C0], 0, 64)                 ' |
 
+  if reset                                      ' optionally (hard)
+    boot                                        ' reset display
   return @driver
 
 CON
@@ -131,7 +134,7 @@ func_2          andn    outa, mdnc              ' command mode
 
 func_3          or      dira, mres              ' hard reset
 
-func_3_wait     mov     cnt, cnt
+                mov     cnt, cnt
                 add     cnt, #9{14} + 306       ' min 3us reset pulse (4us)
                 waitcnt cnt, #0
 
@@ -167,13 +170,13 @@ setup           mov     ctra, ctr0              ' SPI_CLK
                 mov     ctrb, ctr1              ' SPI_MOSI
 
                 mov     outa, msel              ' not selected
-                mov     dira, mask              ' drive outputs/reset
+                mov     dira, mask              ' drive outputs
 
-                jmp     #func_3_wait            ' reset, then command loop
+                jmp     %%0                     ' command loop
 
 ctr0            long    %0_00101_000 << 23 | SPI_CLK << 9 | SPI_IDLE
 ctr1            long    %0_00100_000 << 23 |                SPI_MOSI
-mask            long    SPI_MASK
+mask            long    SPI_MASK ^ (|< SPI_RES)
 
                 long    -1[0 #> ($40 - $)]
 
