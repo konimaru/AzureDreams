@@ -1,7 +1,7 @@
 ''
 ''        Author: Marko Lukat
-'' Last modified: 2019/05/27
-''       Version: 0.14.wx.4
+'' Last modified: 2019/05/28
+''       Version: 0.14.wx.5
 ''
 '' 20151214: initial version
 '' 20151215: LSB goes out first
@@ -10,6 +10,7 @@
 '' 20190526: reset now controlled by dira, pull-up required
 '' 20190526: max dira doesn't work in this context, use mov
 '' 20190527: display reset now optional during init
+'' 20190528: reset must now be called explicitly
 ''
 VAR
   long  link[res_m]
@@ -40,7 +41,7 @@ PUB boot
 
   exec(0, cmd_boot)
   
-PUB init(reset{boolean})
+PUB init
 
   ifnot cognew(@driver, @link{0}) +1
     abort
@@ -49,8 +50,6 @@ PUB init(reset{boolean})
   longfill(@driver{$00}, 0, 64)                 ' before making DAT public
   longfill(@driver[$C0], 0, 64)                 ' |
 
-  if reset                                      ' optionally (hard)
-    boot                                        ' reset display
   return @driver
 
 CON
