@@ -50,7 +50,7 @@ PRI init : surface
   rgbx.set_all(colour(rgbx#WHITE))                      ' init pixel array
 
   surface := view.init                                  ' start OLED driver
-  view.boot                                             ' force known state
+' view.boot                                             ' force known state (optional)
   view.cmdN(@iseq, iseq[-1])                            ' finish setup
   view.swap(surface)                                    ' show initial screen
   view.cmd1(SSD1306#DISPLAY_ON)                         ' display on
