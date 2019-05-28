@@ -1,7 +1,7 @@
 ''
 ''        Author: Marko Lukat
-'' Last modified: 2019/05/27
-''       Version: 0.8
+'' Last modified: 2019/05/28
+''       Version: 0.9
 ''
 CON
   _clkmode = client#_clkmode
@@ -47,7 +47,8 @@ PRI init : surface
   rgbx.start_2812b(@pixels, 4, client#RGBX, 1_0)        ' start RGBX LED driver
   rgbx.set_all(colour(rgbx#WHITE))                      ' init pixel array
 
-  surface := view.init(TRUE)                            ' start OLED driver
+  surface := view.init                                  ' start OLED driver
+  view.boot                                             ' force known state
   view.cmdN(@iseq, iseq[-1])                            ' finish setup
   view.swap(surface)                                    ' show initial screen
   view.cmd1(SSD1306#DISPLAY_ON)                         ' display on
